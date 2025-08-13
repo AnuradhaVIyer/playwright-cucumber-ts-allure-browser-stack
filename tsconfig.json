@@ -1,0 +1,20 @@
+// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "features/**/*.ts",
+   "step-definitions/**/*.ts",
+   "hooks/**/*.ts"],
+  "exclude": [
+    "node_modules"
+  ]
+}

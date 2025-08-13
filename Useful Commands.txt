@@ -1,0 +1,12 @@
+npm install --save-dev playwright@1.53.0 @cucumber/cucumber allure-commandline allure-playwright
+npm install --save-dev browserstack-local browserstack-node-sdk
+
+
+
+powershell
+===========
+$env:BROWSERSTACK_USERNAME="anuradhaiyer_w5xEUH"
+$env:BROWSERSTACK_ACCESS_KEY="zQmAWcCdNZURJZBEUrbs"
+
+
+
