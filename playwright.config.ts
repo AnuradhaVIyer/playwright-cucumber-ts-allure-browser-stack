@@ -20,6 +20,7 @@ export default defineConfig({
         baseURL: process.env.LOCAL_BASE_URL || 'http://localhost:3000',
         headless: false,
         video: 'retain-on-failure',
+        screenshot: 'only-on-failure', // or 'on' to capture screenshots for every test
       },
   projects: isBrowserStack
     ? [

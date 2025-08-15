@@ -1,0 +1,73 @@
+pipeline:
+  name: Playwright Cucumber BrowserStack Pipeline
+  identifier: playwright_cucumber_browserstack_pipeline
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags: {}
+  variables:
+    - name: BROWSERSTACK_USERNAME
+      type: Secret
+      description: Your BrowserStack username, stored in a Harness Secret.
+      value: <+secrets.getValue("BROWSERSTACK_USERNAME")>
+    - name: BROWSERSTACK_ACCESS_KEY
+      type: Secret
+      description: Your BrowserStack access key, stored in a Harness Secret.
+      value: <+secrets.getValue("BROWSERSTACK_ACCESS_KEY")>
+    - name: BROWSER_NAME
+      type: String
+      description: The browser to run tests against (e.g., chrome, firefox, edge).
+      value: chrome
+  stages:
+    - stage:
+        name: Build and Test
+        identifier: build_and_test
+        description: Builds the project and runs Playwright tests on BrowserStack.
+        type: CI
+        spec:
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          codebase:
+            connectorRef: PlaywrightCucumberAllureBrowserStack
+            repoName: playwright-cucumber-ts-allure-browser-stack
+            build: <+input>
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Install Dependencies
+                  identifier: install_dependencies
+                  spec:
+                    shell: Sh
+                    command: npm ci
+              - step:
+                  type: Run
+                  name: Run Cucumber Tests on BrowserStack
+                  identifier: run_tests
+                  spec:
+                    shell: Sh
+                    command: npm test
+                    envVariables:
+                      BROWSER: <+pipeline.variables.BROWSER_NAME>
+              - step:
+                  type: Run
+                  name: Generate Allure Report
+                  identifier: generate_report
+                  spec:
+                    shell: Sh
+                    command: npx allure generate allure-results --clean -o allure-report
+          cloneCodebase: true
+          caching:
+            enabled: false
+            paths: []
+          buildIntelligence:
+            enabled: false
+  properties:
+    ci:
+      codebase:
+        connectorRef: PlaywrightCucumberAllureBrowserStack
+        build: <+input>
+        sparseCheckout: []

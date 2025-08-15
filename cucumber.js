@@ -9,7 +9,6 @@ module.exports = {
             --format json:reports/cucumber-report.json \
             --format html:reports/cucumber-report.html \
             --format allure-cucumberjs/reporter \
-            --require global-setup.js \
-            --require global-teardown.js \
+            --strict
             ${process.env.FEATURE_FILES || 'features/**/*.feature'}`
 };

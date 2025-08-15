@@ -1,0 +1,39 @@
+import { After, Before, Status, World } from '@cucumber/cucumber'; // Import World
+import { chromium, Browser, Page } from 'playwright';
+import * as fs from 'fs';
+import * as path from 'path';
+
+// Define your custom World interface that extends Cucumber's World
+interface CustomWorld extends World {
+  page: Page;
+  browser: Browser;
+}
+
+Before(async function (this: CustomWorld) { // Use CustomWorld
+  this.browser = await chromium.launch({ headless: true });
+  this.page = await this.browser.newPage();
+});
+
+After(async function (this: CustomWorld, scenario) { // Use CustomWorld
+  if (scenario.result?.status === Status.FAILED) {
+    const screenshotBuffer = await this.page.screenshot({ fullPage: true });
+
+    // Embed screenshot into the Cucumber report
+    this.attach(screenshotBuffer, 'image/png'); 
+
+    // Optional: Save the screenshot to a file for local debugging
+    const screenshotsDir = 'reports/screenshots';
+    if (!fs.existsSync(screenshotsDir)) {
+      fs.mkdirSync(screenshotsDir, { recursive: true });
+    }
+    const timestamp = new Date().toISOString().replace(/:/g, '-');
+    const screenshotName = `${scenario.pickle.name.replace(/\s/g, '_')}_FAILED_${timestamp}.png`;
+    const screenshotPath = path.join(screenshotsDir, screenshotName);
+    fs.writeFileSync(screenshotPath, screenshotBuffer);
+    console.log(`Screenshot saved to: ${screenshotPath}`);
+  }
+
+  if (this.browser) {
+    await this.browser.close();
+  }
+});
